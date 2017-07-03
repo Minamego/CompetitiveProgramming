@@ -1,0 +1,58 @@
+/*
+solved using robin karp
+*/
+
+#include <iostream>
+#include<bits/stdc++.h>
+using namespace std;
+char str[100100];
+long long mod  = 1e9 + 7;
+long long pw(long long x, long long sum) {
+	long long res = 1, power = sum, val = x;
+	while (power) {
+		if (power & 1) {
+			res *= val;
+			res %= mod;
+		}
+		val *= val;
+		val %= mod;
+		power >>= 1ll;
+	}
+	return res;
+}
+long long pw1 , pw2;
+void shiftLeft(long long &x , int removed ,int added )
+{
+    x = (x - (removed*pw1)%mod + mod)%mod;
+    x = (x*26)%mod;
+    x = (x+added)%mod;
+}
+void shiftRight(long long &x , int removed ,int added )
+{
+    x = (x - removed+mod)%mod;
+    x = (x * pw2)%mod;
+    x = (x+(added*pw1)%mod)%mod;
+}
+
+int main()
+{
+    pw2 = pw(26 , mod-2);
+    while(~scanf("%s" , str))
+    {
+        int len = strlen(str);
+        long long sum1 = 0 , sum2 = 0;
+        for(int i = 0; i < len ; i++ ) shiftLeft(sum1 , 0 , str[i]-'a') , shiftLeft(sum2 , 0 , str[len-1-i]-'a');
+        int j = -1;
+        for(int i = 0 ; i<len ; i++)
+        {
+            if(sum1==sum2) break;
+            sum1 = (sum1 - ((str[i]-'a')*pw(26 , len-1 - i))%mod + mod)%mod;
+            shiftRight(sum2 , str[i]-'a' , 0);
+            j = i;
+        }
+        printf("%s" , str);
+        for(int i = j ; i>=0 ; i--) printf("%c" , str[i]);
+        printf("\n");
+    }
+    return 0;
+}
