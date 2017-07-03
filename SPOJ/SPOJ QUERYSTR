@@ -1,0 +1,57 @@
+#include <iostream>
+#include<bits/stdc++.h>
+using namespace std;
+char s[100100];
+int n;
+vector<int> KMP()
+{
+  vector<int> pi;
+  pi.push_back(0);
+  for(int i = 1 , j = 0 ; i<n  ; ++i)
+	{
+	   while(j && s[i] != s[j])
+        j = pi[j-1];
+	   if(s[i] == s[j]) ++j;
+        pi.push_back(j);
+    }
+  return pi;
+}
+
+vector<int> z_function() {
+    vector<int> z(n);
+    for (int i = 1, l = 0, r = 0; i < n; ++i) {
+        if (i <= r)
+            z[i] = min (r - i + 1, z[i - l]);
+        while (i + z[i] < n && s[z[i]] == s[i + z[i]])
+            ++z[i];
+        if (i + z[i] - 1 > r)
+            l = i, r = i + z[i] - 1;
+    }
+    return z;
+}
+int main()
+{
+    int t;
+    cin>>t;
+    while(t--)
+    {
+        int q;
+        scanf("%s%d" , s , &q);
+        string str = s;
+        string p = str;
+        n = str.size();
+        //reverse(p.begin() , p.end());
+        //str = p + "#" + str;
+        reverse(str.begin() , str.end());
+        for(int i = 0 ; i<str.size() ; ++i) s[i] = str[i];
+        vector<int>z = z_function();
+        while(q--)
+        {
+            int x;
+            scanf("%d" , &x);
+           if(x<p.size())printf("%d\n" , z[p.size() - x]);
+           else printf("%d\n" , x);
+        }
+    }
+    return 0;
+}
