@@ -1,0 +1,59 @@
+/*
+solved using robin karp algorithm
+*/
+#include <iostream>
+#include<bits/stdc++.h>
+using namespace std;
+long long mod  = 1e9 + 7;
+long long pw(long long x, long long sum) {
+	long long res = 1, power = sum, val = x;
+	while (power) {
+		if (power & 1) {
+			res *= val;
+			res %= mod;
+		}
+		val *= val;
+		val %= mod;
+		power >>= 1ll;
+	}
+	return res;
+}
+long long pw1 , pw2;
+void shiftLeft(long long &x , int removed ,int added )
+{
+    x = (x - (removed*pw1)%mod + mod)%mod;
+    x = (x*26)%mod;
+    x = (x+added)%mod;
+}
+void shiftRight(long long &x , int removed ,int added )
+{
+    x = (x - removed+mod)%mod;
+    x = (x * pw2)%mod;
+    x = (x+(added*pw1)%mod)%mod;
+}
+int main()
+{
+    int k;
+    string s;
+    cin>>k>>s;
+
+    if(k>s.size() || k==0) return puts("0");
+    pw1 = pw(26 , k-1);
+    pw2 = pw(26 , mod-2);
+    long long sum1 = 0 , sum2 = 0;
+    for(int i = 0 ; i<k ; i++)
+    {
+        shiftLeft(sum1 , 0 , s[i]-'a');
+        shiftLeft(sum2 , 0 , s[k-1-i]-'a');
+    }
+    int ans = 0;
+    for(int i = k ; i<s.size() ; i++)
+    {
+        if(sum1 == sum2) ans++;
+        shiftLeft(sum1 , s[i-k]-'a' , s[i]-'a');
+        shiftRight(sum2 , s[i-k]-'a' , s[i]-'a');
+    }
+    if(sum1 == sum2) ans++;
+    cout<<ans<<endl;
+    return 0;
+}
