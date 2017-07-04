@@ -1,0 +1,59 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+const int Mx = 20000 + 9;
+char str[Mx];
+int suf[Mx];
+int rnk[Mx];
+int tmprank[Mx];
+int lcp[Mx];
+struct cmp {
+	int h;
+	bool operator()(int i, int j) const {
+		return rnk[i] < rnk[j] || (rnk[i] == rnk[j] && rnk[i + h] < rnk[j + h]);
+	}
+};
+void buildSA() {
+	int len = 0;
+	do {
+		suf[len] = len;
+		rnk[len] = str[len];
+	} while (str[len++]);
+	for (int h = 1;; h <<= 1) {
+		cmp c = { h };
+		sort(suf, suf + len, c);
+		for (int i = 1; i < len; i++) {
+			tmprank[i] = tmprank[i - 1] + c(suf[i - 1], suf[i]);
+		}
+		for (int i = 0; i < len; i++) {
+			rnk[suf[i]] = tmprank[i];
+		}
+		if (tmprank[len - 1] == len - 1)
+			break;
+	}
+}
+
+int main()
+{
+    //freopen("in.txt" , "r" , stdin);
+    //freopen("out.txt" , "w" , stdout);
+    int t;
+    cin>>t;
+    while(t--)
+    {
+        scanf("%s" , str);
+        int len = strlen(str);
+        bool flag = 1;
+        for(int i=0 ; i<len ; ++i)
+        {
+            str[i+len] = str[i];
+            if(i) flag&=(str[i] == str[i-1]);
+        }
+        buildSA();
+        int i = 1;
+        while(suf[i] >= len) i++;
+       if(!flag) printf("%d\n" , suf[i]+1);
+       else printf("1\n");
+    }
+    return 0;
+}
