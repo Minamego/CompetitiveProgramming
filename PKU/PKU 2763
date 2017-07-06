@@ -1,0 +1,125 @@
+  /*
+        used LCA and BIT for updating and getting the answer
+  */
+  
+  #include<algorithm>
+   #include<iostream>
+   #include<cstring>
+   #include<cstdio>
+   #include<cmath>
+   using namespace std;
+   const int mxn=400010;
+  int read(){
+      int x=0,f=1;char ch=getchar();
+      while(ch<'0' || ch>'9'){if(ch=='-')f=-1;ch=getchar();}
+      while(ch>='0' && ch<='9'){x=x*10+ch-'0';ch=getchar();}
+      return x*f;
+  }
+  int n,q,s;
+  int in[mxn],out[mxn];
+  int cnt=0;
+
+  struct edge{
+      int v,next;
+      int dis;
+      int id;
+  }e[mxn];
+  int hd[mxn],mcnt=0;
+  void add_edge(int u,int v,int dis,int id){
+      e[++mcnt].v=v;e[mcnt].next=hd[u];e[mcnt].dis=dis;e[mcnt].id=id;hd[u]=mcnt;
+  }
+  int tto[mxn];
+  int t[mxn];
+  int tree_lmn;
+  int lowbit(int x){return x&-x;}
+  void add(int p,int v){
+      while(p<=tree_lmn){t[p]+=v;p+=lowbit(p);}
+      return;
+  }
+  int smm(int x){
+      int res=0;
+      while(x){res+=t[x];x-=lowbit(x);}
+      return res;
+  }
+  int dep[mxn];
+  int disto[mxn];
+  int fa[mxn][19];
+  void DFS(int u,int father){
+      int i,j;
+      in[u]=++cnt;
+      for(i=hd[u];i;i=e[i].next){
+          int v=e[i].v;
+          if(v==father)continue;
+          tto[e[i].id]=v;
+          disto[v]=e[i].dis;
+          dep[v]=dep[u]+1;
+          fa[v][0]=u;
+        DFS(v,u);
+     }
+     out[u]=++cnt;
+  }
+  void initLCA(){
+     int i,j;
+    for(i=1;i<=17;i++){
+         for(j=1;j<=n;j++){
+            fa[j][i]=fa[fa[j][i-1]][i-1];
+        }
+    }
+     return;
+  }
+ int LCA(int x,int y){
+      if(dep[x]<dep[y])swap(x,y);
+      int i;
+     for(i=17;i>=0;i--){
+        if(dep[fa[x][i]]>=dep[y])
+              x=fa[x][i];
+      }
+      if(x==y) return y;
+      for(i=17;i>=0;i--)
+          if(fa[x][i]!=fa[y][i]){
+              x=fa[x][i];
+              y=fa[y][i];
+          }
+      return fa[x][0];
+  }
+  int tmp;
+ int dist(int x,int y){
+    tmp=LCA(x,y);
+    return smm(in[x])+smm(in[y])-2*smm(in[tmp]);
+ }
+
+ int main(){
+    n=read();q=read();s=read();
+     tree_lmn=mxn-10;
+     int i,j;
+      int u,v,d;
+     for(i=1;i<n;i++){
+         u=read();v=read();d=read();
+         add_edge(u,v,d,i);
+         add_edge(v,u,d,i);
+     }
+     dep[1]=1;
+     DFS(1,0);
+     initLCA();
+     for(i=1;i<=n;i++){
+         add(in[i],disto[i]);
+         add(out[i],-disto[i]);
+     }
+     int opr;
+     while(q--){
+         opr=read();
+         if(opr==0){
+             v=read();
+             printf("%d\n",dist(s,v));
+             s=v;
+         }
+         else{
+             v=read();d=read();
+             v=tto[v];
+             add(in[v],d-disto[v]);
+             add(out[v],-d+disto[v]);
+             disto[v]+=d-disto[v];
+         }
+     }
+     return 0;
+ }
