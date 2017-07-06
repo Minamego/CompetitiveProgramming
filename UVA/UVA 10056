@@ -1,0 +1,41 @@
+/*
+    ans = prob of winning on first round + prob of winning on second round + .....
+    prob of winning on ith round = ((1-p) ^ (playerIdx - 1 + (i * (n-1))) )* p
+*/
+
+#include <iostream>
+#include<bits/stdc++.h>
+using namespace std;
+double pw(double x, long long sum) {
+	double res = 1 , val = x;
+	long long power = sum;
+	while (power) {
+		if (power & 1) {
+			res *= val;
+		}
+		val *= val;
+		power >>= 1ll;
+	}
+	return res;
+}
+int main()
+{
+    int t;
+    cin>>t;
+    while(t--)
+    {
+        int n,x;
+        double p;
+        cin>>n>>p>>x;
+       double ans = 0 , pre = 0;
+        for(int i = 1 ;  ; i++)
+        {
+            ans+=pw(1-p , x-1 + n*(i-1) ) * p;
+            if(ans - pre <= 1e-6)
+                 break;
+            pre = ans;
+        }
+        printf("%.4f\n" , ans);
+    }
+    return 0;
+}
