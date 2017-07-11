@@ -1,0 +1,64 @@
+#include <vector>
+#include <list>
+#include <map>
+#include <set>
+#include <queue>
+#include <deque>
+#include <stack>
+#include <bitset>
+#include <algorithm>
+#include <functional>
+#include <numeric>
+#include <utility>
+#include <sstream>
+#include <iostream>
+#include <iomanip>
+#include <cstdio>
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
+
+using namespace std;
+
+
+class Table {
+public:
+	vector <string> layout(vector <string> tbl) {
+        vector<string>ans;
+        int j = 0;
+        int n=0 , m = 0;
+        for(int i = 1 ; i<tbl[0].size() ; i+=7)
+        {
+            m+=tbl[0][i]-'0';
+        }
+       n = tbl.size();
+
+        ans.resize(n);
+        for(int i = 0 ; i<n ; i++)
+            {
+               ans[i].resize(m , '.');
+            }
+        int a = 0,b = 0;
+        for(int i = 0 ; i<tbl.size() ; i++)
+        {
+            while(a<n)
+            {
+                b = 0;
+                while(b<m && ans[a][b]!='.') b++;
+                if(b==m) a++;
+                else break;
+            }
+            for(int j = 0 ; j<tbl[i].size() ; j+=7)
+            {
+                int w = tbl[i][j+1] - '0';
+                int h = tbl[i][j+3] - '0';
+                char c = tbl[i][j+5];
+                for(int k = 0 ; k<h ; k++ )
+                    for(int p = 0 ; p<w ; p++)
+                        ans[a+k][b+p] = c;
+                while(b<m && ans[a][b]!='.') b++;
+            }
+        }
+        return ans;
+	}
+};
