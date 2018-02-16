@@ -1,0 +1,80 @@
+#include <iostream>
+#include <bits/stdc++.h>
+using namespace std;
+int need[10];
+int arr[10][10];
+int x[10] , y[10];
+int n,m;
+bool visit[10][10];
+int dx[] = {1,-1,0,0};
+int dy[] = {0,0,1,-1};
+vector<pair<int,int> >vec;
+void print()
+{
+    for(int i = 0 ; i<vec.size() ; ++i)
+    {
+        printf("(%d,%d) " , vec[i].first , vec[i].second);
+    }
+    puts("");
+}
+int ans = 0;
+bool notBlocked(int i , int j)
+{
+    int dir[4];
+    for(int k = 0 ; k<4 ; ++k)
+    {
+        int toX = i + dx[k];
+        int toY = j + dy[k];
+        if(toX >=0 && toX<n && toY >=0 && toY < m && !visit[toX][toY])
+            dir[k] = 1;
+        else dir[k] = 0;
+    }
+    if(dir[0] && dir[1] && !dir[2] && !dir[3]) return 0; // can go right and left but not up and down
+    if(!dir[0] && !dir[1] && dir[2] && dir[3]) return 0; // can't go right and left but can up and down
+    return 1;
+}
+void solve(int i , int j ,int idx ,  int cnt)
+{
+    if(cnt == need[idx])
+    {
+        if(arr[i][j] == idx) idx++;
+        else return;
+    }
+    else if(arr[i][j]) return;
+    if(cnt == n*m) {ans++; return;}
+    if(abs(x[idx]-i)+abs(y[idx]-j)>need[idx]-cnt) return;   // can't reach in needed time
+    for(int k = 0 ; k<4 ; ++k)
+    {
+        int toX = i + dx[k];
+        int toY = j + dy[k];
+        if(toX < n && toX>=0 && toY < m && toY >=0 && !visit[toX][toY] && notBlocked(toX , toY))
+        {
+            visit[toX][toY] = 1;
+            solve(toX , toY , idx , cnt+1);
+            visit[toX][toY] = 0;
+        }
+    }
+}
+int main()
+{
+    //freopen("in.txt" , "r" , stdin);
+    int t = 1;
+    while(scanf("%d%d" , & n , &m) , n)
+    {
+        memset(arr , 0 , sizeof arr);
+        int tot = n*m;
+        for(int i = 1 ; i<=3 ; ++i)
+           {
+               scanf("%d%d" , &x[i] , &y[i]);
+               arr[x[i]][y[i]] = i;
+               need[i] = (i)*tot/4;
+           }
+        x[4] = 0 , y[4] = 1 , need[4] = tot , arr[0][1] = 4;
+      //  memset(visit , 0 , sizeof visit);
+        visit[0][0] = 1;
+        ans = 0;
+        solve(0,0,1,1);
+        printf("Case %d: %d\n" , t++ , ans);
+    }
+    return 0;
+}
