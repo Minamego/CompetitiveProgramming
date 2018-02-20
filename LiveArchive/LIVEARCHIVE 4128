@@ -1,0 +1,91 @@
+// Just Dijkstra but with some modification because i have to options to go with the time or doubled time
+
+#include <iostream>
+#include <bits/stdc++.h>
+using namespace std;
+int n,m,r,c,x,y;
+int dx[] = {1,-1,0,0};
+int dy[] = {0,0,1,-1};
+int cost[4][105][105];
+struct node
+{
+    int x, y,c;
+    int pre;
+    bool f;
+    node(int xx , int yy , bool ff , int cc , int pree)
+    {
+        x = xx , y = yy , f = ff , c = cc;
+        pre = pree;
+    }
+    bool operator < (const node & a) const
+    {
+        return c > a.c;
+    }
+};
+int visit[105][105][5][2];
+int dikstra()
+{
+    priority_queue<node>q;
+    q.push(node(r,c,0,0,4));
+    memset(visit , -1 , sizeof visit);
+    while(!q.empty())
+    {
+        node no = q.top();
+        q.pop();
+        if(visit[no.x][no.y][no.pre][no.f] != -1) continue;
+        visit[no.x][no.y][no.pre][no.f] = no.c;
+        if(no.x == x && no.y == y && no.f ==0) return no.c;
+        if(no.f)
+        {
+            int i = no.pre;
+            int tox = no.x + dx[i];
+            int toy = no.y + dy[i];
+            if(tox >= 1 && tox <= n && toy >= 1 && toy <=m && visit[tox][toy][i][0]== -1 && cost[i][no.x][no.y]) q.push(node(tox , toy , 0 , no.c + cost[i][no.x][no.y]*2 , i));
+            if(tox >= 1 && tox <= n && toy >= 1 && toy <=m && visit[tox][toy][i][1]== -1 && cost[i][no.x][no.y]) q.push(node(tox , toy , 1 , no.c + cost[i][no.x][no.y], i));
+        }
+        else
+        {
+            for(int i = 0 ; i<4 ; ++i)
+            {
+                int tox = no.x + dx[i];
+                int toy = no.y + dy[i];
+                if(tox >= 1 && tox <= n && toy >= 1 && toy <=m && visit[tox][toy][i][0]== -1 && cost[i][no.x][no.y]) q.push(node(tox , toy , 0 , no.c + cost[i][no.x][no.y]*2 , i));
+                if(tox >= 1 && tox <= n && toy >= 1 && toy <=m && visit[tox][toy][i][1]== -1 && cost[i][no.x][no.y] && i == no.pre) q.push(node(tox , toy , 1 , no.c + cost[i][no.x][no.y], i));
+            }
+        }
+    }
+    return -1;
+}
+int main()
+{
+
+    int t = 1;
+    while(1)
+    {
+        scanf("%d%d%d%d%d%d" , &n , &m , &r , &c , &x , &y);
+        if(!n) break;
+        memset(cost  , 0 , sizeof cost);
+        for(int k = 1 ; k<=n ; ++k)
+        {
+            for(int i = 1 ; i< m ; ++i)
+            {
+                int p;
+                scanf("%d" , &p);
+                cost[2][k][i] = cost[3][k][i+1] = p;
+            }
+            if(k != n)
+            {
+                for(int i = 1 ; i<= m; ++i)
+                {
+                    int p;
+                    scanf("%d" , &p);
+                    cost[0][k][i] = cost[1][k+1][i] = p;
+                }
+            }
+        }
+        int ans = dikstra();
+        if(ans == -1) printf("Case %d: Impossible\n" , t++);
+        else printf("Case %d: %d\n" , t++ , ans);
+    }
+    return 0;
+}
