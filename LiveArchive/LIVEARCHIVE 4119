@@ -1,0 +1,133 @@
+// i just loop from 1 to 1000 and check if all of them makes the function output divisabe by D 
+// i have no proof why looping to 1000 is enough :V
+
+#include <iostream>
+#include <bits/stdc++.h>
+using namespace std;
+string s;
+vector<int>pw;
+vector<long long>mul;
+long long mod;
+long long pww(long long x , long long sum)
+{
+    long long res = 1 , power = sum , val = x;
+    while(power)
+    {
+        if(power&1)
+        {
+            res *= val;
+            res %= mod;
+        }
+        val *= val;
+        val %= mod;
+        power >>= 1ll;
+    }
+    return res;
+}
+int main()
+{
+    int t  =1;
+    while(1)
+    {
+        cin>>s;
+        if(s== ".") break;
+        pw.clear();
+        mul.clear();
+        int i;
+        for( i = 1 ; s[i] != ')' ;)
+        {
+            if(i == 1 && s[i] != '-')
+            {
+                if(s[i] == 'n') mul.push_back(1);
+                else
+                {
+                    long long x = 0;
+                    while(s[i] >= '0' && s[i] <= '9')
+                        {
+                            x*=10;
+                            x += (s[i] - '0');
+                            i++;
+                        }
+                    mul.push_back(x);
+                }
+            }
+            else if(s[i] == '-')
+            {
+                i++;
+                if(s[i] == 'n') mul.push_back(-1);
+                else
+                {
+                    long long x = 0;
+                    while(s[i] >= '0' && s[i] <= '9')
+                        {
+                            x*=10;
+                            x += (s[i] - '0');
+                            i++;
+                        }
+                    mul.push_back(-x);
+                }
+            }
+            else
+            {
+                i++;
+                if(s[i] == 'n') mul.push_back(1);
+                else
+                {
+                    long long x = 0;
+                    while(s[i] >= '0' && s[i] <= '9')
+                        {
+                            x*=10;
+                            x += (s[i] - '0');
+                            i++;
+                        }
+                    mul.push_back(x);
+                }
+            }
+            if(s[i] == 'n')
+            {
+                i++;
+                if(s[i] != '^') pw.push_back(1);
+                else
+                {
+                    i++;
+                    long long x = 0;
+                    while(s[i] >= '0' && s[i] <= '9')
+                        {
+                            x*=10;
+                            x += (s[i] - '0');
+                            i++;
+                        }
+                    pw.push_back(x);
+                }
+            }
+            else
+            {
+                pw.push_back(0);
+            }
+        }
+        //for(int i = 0 ; i<pw.size() ; ++i) cout<<pw[i]<<" "<<mul[i]<<endl;
+        mod = 0;
+        i++;
+        i++;
+        while(i<s.size())
+        {
+            mod*=10;
+            mod += (s[i] - '0');
+            i++;
+        }
+        bool f = 1;
+        long long rem = 0;
+        for( i = 1 ; i<= 1000 ; ++i)
+        {
+            for(int j = 0 ; j<pw.size() ; ++j)
+            {
+                long long x = ( ((mul[j]%mod)+mod)%mod * pww(i , pw[j])) %mod;
+                rem = (rem + x)%mod;
+            }
+            if(rem != 0) {f = 0; break;}
+        }
+        if(f) printf("Case %d: Always an integer\n" , t++);
+        else printf("Case %d: Not always an integer\n" , t++);
+    }
+    return 0;
+}
