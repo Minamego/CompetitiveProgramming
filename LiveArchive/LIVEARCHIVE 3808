@@ -1,0 +1,101 @@
+/*
+    try all different permutions of the messages order then for each perm calculate the size it needs and minimize the answer
+*/
+
+#include<bits/stdc++.h>
+using namespace std;
+
+#define scl(x) scanf("%lld",&x)
+#define sc(x)  scanf("%d",&x)
+#define ll long long
+#define lop(i,n) for(int i=0;i<n;++i)
+typedef pair<int, int> ii;
+typedef pair<ll, ll> pll;
+
+int sz[6],bufferSz,n,m;
+vector<int> state[6];// 0 not here, 1 in queue, 2 outputted
+pair<int,pair<int,int> > pr[1005];
+int arr[10];
+int main(){
+
+	int tc=1;
+	while(sc(n),sc(m),n||m){
+		lop(i,n){
+			sc(sz[i]);
+			arr[i] = i;
+		}
+		bufferSz=0;
+		int out=1e5;
+		lop(i,m){
+			int id,s,e;
+			sc(id),sc(s),sc(e);
+			id--;
+			s=max(s,1);
+			s=min(s,sz[id]);
+			e=min(e,sz[id]);
+			e=max(e,1);
+			if(s>e) swap(s,e);
+			if(id>=n)continue;
+			pr[i] = {id , {s,e}};
+		}
+        do
+        {
+            lop(i,n){
+			state[i].clear();
+			state[i]=vector<int>(sz[i]+5,0);
+			state[i][0]=2;
+            }
+            bufferSz=0;
+            int maxi = 0;
+            int j = 0;
+            for(int i = 0 ; i<m && j<n ; ++i)
+            {
+                int st = pr[i].second.first;
+                int en = pr[i].second.second;
+                int idx = pr[i].first;
+                int pos = arr[j];
+                if(pr[i].first == arr[j])
+                {
+
+                    if(state[pos][st-1] == 2)
+                    {
+                        for(int k = st ; k<=en ; ++k) state[pos][k] = 2;
+                        en++;
+                        for( ; en<=sz[pos] ; ++en)
+                        {
+                            if(state[pos][en] == 1) state[pos][en] = 2 , bufferSz--;
+                            else break;
+                        }
+                        if(en == sz[pos]+1)
+                        {
+                            j++;
+                            while(j<n)
+                            {
+                                pos = arr[j];
+                                int k;
+                                for( k = 1 ; k<=sz[pos] ; ++k)
+                                {
+                                    if(state[pos][k] == 1) state[pos][k] = 2 , bufferSz--;
+                                    else break;
+                                }
+                                if(k == sz[pos]) j++;
+                                else break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for(int k = st ; k<=en ; ++k) if(state[pos][k] != 2)  state[pos][k] = 1 , bufferSz++;
+                    }
+                }
+                else
+                {
+                    for(int k = st ; k<=en ; ++k)   if(state[idx][k] != 2)  state[idx][k] = 1 , bufferSz++;
+                }
+                maxi = max(maxi , bufferSz);
+            }
+            out = min(out , maxi);
+        }while(next_permutation(arr , arr+n));
+		printf("Case %d: %d\n\n",tc++,out);
+	}
+}
