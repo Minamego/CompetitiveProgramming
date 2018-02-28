@@ -1,0 +1,75 @@
+/*
+    get the fourmla of summation of the area of the polygons and summation of latice points on the borders then apply Pick's Theorem
+*/
+
+#include<bits/stdc++.h>
+using namespace std;
+
+typedef long long ll;
+typedef unsigned long long ull;
+typedef vector<int> vi;
+#define sz(v) (int)v.size()
+#define PC(x) __builtin_popcount(x)
+#define all(v) v.begin(),v.end()
+#define CLR(a,v) memset(a,v,sizeof(a))
+
+const int MAX = 1005;
+ull n, m;
+int  x[MAX], y[MAX], TC, X[MAX], Y[MAX], vis[MAX], visID, idx;
+
+ll cross(int _x, int _y, int _x2, int _y2) {
+	return _x * 1ll * _y2 - _y * 1ll * _x2;
+}
+
+bool pointOnLine(int i, int j, int k) {
+	return cross(x[j] - x[i], y[j] - y[i], x[k] - x[i], y[k] - y[i]) == 0;
+}
+
+int main() {
+#ifndef ONLINE_JUDGE
+	//freopen("in.txt", "r", stdin);
+//	freopen("out.txt", "w", stdout);
+#endif
+	while (scanf("%lld%lld", &n, &m) == 2 && n) {
+		++visID;
+		printf("Case %d: ", ++TC);
+		idx = 0;
+		int g = 0;
+		for (int i = 0; i < n; ++i)
+			scanf("%d%d", &x[i], &y[i]);
+		for (int i = 0; i < n; ++i) {
+			int j = ((i - 1) + n) % n, k = (i + 1) % n;
+			if (pointOnLine(j, i, k))
+				vis[i] = visID;
+		}
+		for (int i = 0; i < n; ++i)
+			if (vis[i] != visID) {
+				X[idx] = x[i];
+				Y[idx++] = y[i];
+			}
+		n = idx;
+        if(n<3)
+        {
+            printf("0\n");
+            continue;
+        }
+		ll A = 0;
+		ll b = 0;
+		for (int i = 0, j = n - 1; i < n; j = i++) {
+			g = __gcd(g, __gcd(abs(X[i] - X[j]), abs(Y[i] - Y[j])));
+			A += cross(X[i], Y[i], X[j], Y[j]);
+		}
+		for (int i = 0, j = n - 1; i < n; j = i++) {
+			b += __gcd(abs(X[i] - X[j]) / g, abs(Y[i] - Y[j]) / g);
+		}
+
+		A /= (1ll*g*g);
+		A = abs(A);
+//		b /= g;
+//		cout << A << ' ' << b << endl;
+
+		ull A1 =  m * (m + 1) / 2 * (2 * m + 1) / 3 * A;
+		ull B1 =  m * (m + 1) / 2 * b;
+		printf("%llu\n", (A + 2*m - b) / 2);
+	}
+}
