@@ -1,0 +1,53 @@
+/*
+    intersect the X's ranges and the Y's ranges
+*/
+#include <iostream>
+#include <bits/stdc++.h>
+using namespace std;
+
+int main()
+{
+     //freopen("in.txt" , "r" , stdin);
+       // freopen("out.txt" , "w" , stdout);
+    pair<int,int>x[2],y[2];
+    int t;
+    cin>>t;
+    bool f = 0;
+    while(t--)
+    {
+        if(f) cout<<endl;
+        f = 1;
+
+        cin>>x[0].first>>y[0].first>>x[0].second>>y[0].second;
+        cin>>x[1].first>>y[1].first>>x[1].second>>y[1].second;
+
+        int minix , maxix;
+        int miniy , maxiy;
+        if(x[0].first <=x[1].first)
+        {
+            minix = x[1].first;
+            maxix = min(x[0].second , x[1].second);
+        }
+        else
+        {
+            minix = x[0].first;
+            maxix = min(x[0].second , x[1].second);
+        }
+        if(y[0].first <=y[1].first)
+        {
+            miniy = y[1].first;
+            maxiy = min(y[0].second , y[1].second);
+        }
+        else
+        {
+            miniy = y[0].first;
+            maxiy = min(y[0].second , y[1].second);
+        }
+        if(minix < maxix && miniy < maxiy)
+        {
+            cout<<minix<<" "<<miniy<<" "<<maxix<<" "<<maxiy<<endl;
+        }
+        else cout<<"No Overlap"<<endl;
+    }
+    return 0;
+}
