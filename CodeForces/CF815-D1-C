@@ -1,0 +1,59 @@
+#include <iostream>
+#include <bits/stdc++.h>
+using namespace std;
+int old[5005],nw[5005];
+int dp[5005][5005][3];
+int par[5005],sz[5005];
+int main()
+{
+    int n,b;
+    cin>>n>>b;
+    for(int i = 0 ; i<n ; ++i)
+    {
+        int c,d;
+        scanf("%d%d" , &c , &d);
+        old[i] = c;
+        nw[i] = c-d;
+        if(i)
+        {
+            int x;
+            scanf("%d" , &x);
+            x--;
+            par[i] = x;
+        }
+    }
+    for(int i = 0 ; i< 5005 ; ++i)
+        for(int j = 0 ; j< 5005 ; ++j)
+        {
+            dp[i][j][0] = dp[i][j][1] = 1e9 + 5;
+        }
+    for(int i = 0 ; i<n ; ++i)
+    {
+        dp[i][0][0] = 0;
+       // dp[i][0][1] = 0;
+        dp[i][1][0] = old[i];
+        dp[i][1][1] = nw[i];
+        sz[i] = 1;
+    }
+    for(int i = n-1 ; i>0 ; --i)
+    {
+        int pre = par[i];
+
+        for(int k = sz[pre] ; k>=0 ; --k)
+        {
+                for(int j = sz[i] ; j>=0 ; --j)
+                {
+                    dp[pre][j+k][0] = min(dp[pre][j+k][0] , dp[i][j][0] + dp[pre][k][0]);
+                    dp[pre][j+k][1] = min(dp[pre][j+k][1] , min(dp[i][j][1] , dp[i][j][0]) + dp[pre][k][1]);
+                }
+        }
+        sz[pre] += sz[i];
+    }
+    int ans = 0;
+    for(int i = 0 ; i<1 ; ++i)
+    {
+        for(int j = 0 ; j<=n ; ++j) if(min(dp[i][j][1],dp[i][j][0]) <= b) ans = max(ans , j);
+    }
+    cout<<ans<<endl;
+    return 0;
+}
